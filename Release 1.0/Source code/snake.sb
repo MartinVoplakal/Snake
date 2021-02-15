@@ -1,0 +1,249 @@
+'▀▄▀▄▀▄ Snake ▄▀▄▀▄▀ᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟᅟ
+'by Martin Voplakal 2020
+
+loadSettings()
+GraphicsWindow.BackgroundColor = backgroundColor
+GraphicsWindow.Width = 27 * strana - 10   '27
+GraphicsWindow.Height = 17 * strana - 10  '17
+GraphicsWindow.CanResize = "false"
+GraphicsWindow.BrushColor = brushColor
+GraphicsWindow.PenColor = penColor
+GraphicsWindow.Title = "Snake by Martin Voplakal © 2021"
+'GraphicsWindow.MouseDown = moused 'for Tests
+coll = "false"
+vychoziDelka = 3
+'strana = 30     'velikost strany kostky
+'foodSize = 20
+krok = strana
+play = "true"
+pause = "true"
+x[0]= strana * 4  'výchozí pozice
+y[0] = strana * 4
+For i = 1 to vychoziDelka-1 'nastavení všech pozic na výchozí
+  x[i] = x[0]
+  y[i] = y[0]
+EndFor
+
+start()
+'vytvožení počtu začátečních článků těla
+For i = 1 To vychoziDelka
+  newShape()
+EndFor
+For i = 0 To vychoziDelka-1
+  Shapes.Move(ctverec[i], x[0], y[0])
+EndFor
+
+addFood()
+'TextWindow.WriteLine("Width: "+GraphicsWindow.Width+" Heigh: "+GraphicsWindow.Height)
+
+' ----------------------------------------------------------------------- Play cylkus -----------------------------------------------------------------------
+While play
+While pause
+  Program.Delay(a)
+  'Posunutí souřadnic od hlavy dál
+  For i = delka To 1 Step -1
+    x[i] = x[i-1]
+    y[i] = y[i-1]
+  EndFor
+  
+  'přečtení klavesy a pokud je validní přepíše souřadnicce hlavy
+  key0 = GraphicsWindow.LastKey
+  If key0 = "Right" Or key0 = "Down" Or key0 = "Left" Or key0 = "Up" Then 
+    key = key0
+  EndIf
+  i = 0
+  If key = "Right" Then
+    x[i] = x[i] + krok
+  ElseIf key = "Down" Then
+    y[i] = y[i] + krok
+  ElseIf key = "Left" Then
+    x[i] = x[i] - krok
+  ElseIf key = "Up" Then
+    y[i] = y[i] - krok
+  EndIf
+  
+  If GraphicsWindow.LastKey = "Escape" Then
+    pause()
+  EndIf
+
+  'Kontrola kolize
+  collision()
+  If coll = "false" And delka >= vychoziDelka Then
+    coll = "true"
+    'TextWindow.WriteLine("coll was set "+coll)
+  EndIf
+  
+  If x[0] = foodX And y[0] = foodY Then
+    eatFood()
+  EndIf
+  
+  'Zaobrazení
+  For i = 0 To delka-1
+    Shapes.Move(ctverec[i], x[i], y[i])
+  EndFor
+
+  If play = "false" Then
+    pause = "false"
+  endIf
+EndWhile
+
+Program.Delay(50)
+  If setUpKey <> "Stop" Then
+    setUpKey = GraphicsWindow.LastKey
+  EndIf
+  
+  If setUpKey = "Space" Then
+    pause()
+  EndIf
+  
+EndWhile
+'End Game
+endGame()
+
+'==================================PROCCEDURY / SUBPROGRAMY===========================================
+
+'===================================  Přidat nový dílek těla===================================================
+Sub newShape
+  'GraphicsWindow.ShowMessage(Array.GetItemCount(ctverec), "")
+  ctverec[Array.GetItemCount(ctverec)] = Shapes.AddRectangle(strana, strana)
+  delka = delka + 1
+  'GraphicsWindow.ShowMessage("delka= "+delka+" ctverce= "+Array.GetItemCount(ctverec)+" x pole= "+Array.GetItemCount(x)+" y ple= "+Array.GetItemCount(y),"po delka++")
+EndSub
+
+'==================================Kolize čálků těla mezi sebou a s okrajem==========================================
+Sub collision
+  If coll Then'x[delka-1] <> x[delka-2] And y[delka-1] <> y[delka-2] Then
+    'GraphicsWindow.ShowMessage("collision() je spuštěna","")
+    For v = 0 To delka-1
+      For b = 0 To delka-1
+        If x[v] = x[b] And y[v] = y[b] And v <> b Then
+          play = "false"
+          '     GraphicsWindow.ShowMessage("End",v+", "+b)
+        EndIf
+      EndFor
+    EndFor
+    If x[0] = GraphicsWindow.Width Or y[0] = GraphicsWindow.Height Or x[0] = -strana Or y[0] = -strana Then
+      'GraphicsWindow.ShowMessage("play off","")
+      play = "false"
+    EndIf
+  EndIf
+EndSub
+
+'===============================  Aktivace collision( ) kli10knutím myši===== Is OFF ==============================
+Sub moused
+  GraphicsWindow.ShowMessage(GraphicsWindow.MouseX, GraphicsWindow.MouseY)
+  'coll = "true"
+  'newShape()
+  'addFood()
+  'a = a - 5
+  'GraphicsWindow.ShowMessage(Mouse.MouseX, Mouse.MouseY)
+EndSub
+
+'================================ AddFood=====================================================
+Sub addFood
+  foodX = Math.GetRandomNumber(Math.Floor(GraphicsWindow.Width / strana)) * strana - strana
+  foodY = Math.GetRandomNumber(Math.Floor(GraphicsWindow.Height / strana)) * strana - strana
+  foodObj = Shapes.AddEllipse(foodSize, foodSize)
+  'vypocet = foodX + (strana - foodSize) / 2
+  Shapes.Move(foodObj, foodX + (strana - foodSize) / 2, foodY + (strana - foodSize) / 2)
+  'TextWindow.WriteLine("Ham Ham x "+foodX+"  y "+foodY)
+  'GraphicsWindow.ShowMessage((strana - foodSize) / 2, "")
+EndSub
+
+'=============================eatFood=========================================================
+Sub eatFood
+  newShape()
+  Shapes.Remove(foodObj)
+  addFood()
+  a = a - aKrok
+EndSub
+
+'=================================== GAME OVER ================================================
+Sub endGame
+  '  GraphicsWindow.FontSize = 10
+  '  GraphicsWindow.ShowMessage("▀▄▀▄▀▄ GAME OVER ▄▀▄▀▄▀","")
+  '  GraphicsWindow.ShowMessage("Tvé skóre je "+delka+".","")
+  GraphicsWindow.BrushColor = backgroundColor
+  GraphicsWindow.PenColor = backgroundColor
+  wallpaper = Shapes.AddRectangle(GraphicsWindow.Width, GraphicsWindow.Height)
+  Shapes.SetOpacity(wallpaper, 50)
+  GraphicsWindow.FontName = "Times New Roman"
+  GraphicsWindow.FontSize = 100
+  GraphicsWindow.BrushColor = gameOverColor
+  gameOver = Shapes.AddText("GAME OVER")
+  Shapes.Move(gameOver, GraphicsWindow.Width / 2 - 300, GraphicsWindow.Height / 2 - 100)
+  For i = 0 To 1
+    Program.Delay(300)
+    Shapes.HideShape(gameOver)
+    Program.Delay(300)
+    Shapes.ShowShape(gameOver)
+  endfor
+  GraphicsWindow.FontSize = 25
+  GraphicsWindow.BrushColor = scoreColor
+  score = Shapes.AddText("Tvé skóre je "+(delka-vychoziDelka))
+  Shapes.Move(score, Shapes.GetLeft(gameOver)+230, Shapes.GetTop(gameOver)+115)
+  GraphicsWindow.DrawText(10, 10, "tvé nejlepší: "+File.ReadLine(setFile, 200))
+  If delka-vychoziDelka > File.ReadLine(setFile, 200) Then
+    File.WriteLine(setFile, 200, delka-vychoziDelka)
+    GraphicsWindow.ShowMessage("Tvé nové nejlepší skóre: "+(delka-vychoziDelka), " Výborně!")
+  EndIf
+  
+EndSub
+
+'============================== Start =========================================
+Sub start
+  GraphicsWindow.FontSize = 18
+  GraphicsWindow.DrawText(GraphicsWindow.Width / 2 - 300, GraphicsWindow.Height /2 - 150, "Vítej ve hře Snake")
+  GraphicsWindow.DrawText(GraphicsWindow.Width / 2 - 300, GraphicsWindow.Height / 2 - 100, "Ovládání šipkami, pauza Esc, pokračuj stiskem klávesy.")
+  While GraphicsWindow.LastKey = "None"
+    Program.Delay(10)
+  endWhile
+  GraphicsWindow.Clear()
+EndSub
+
+'========================= Pause =============================================
+Sub pause
+  If pause Then
+    pause = "false"
+    GraphicsWindow.BrushColor = backgroundColor
+    GraphicsWindow.PenColor = backgroundColor
+    wallpaper = Shapes.AddRectangle(GraphicsWindow.Width, GraphicsWindow.Height)
+    Shapes.SetOpacity(wallpaper, 50)
+    GraphicsWindow.FontName = "Times New Roman"
+    GraphicsWindow.FontSize = 50
+    GraphicsWindow.BrushColor = pauseColor
+    pauseText = Shapes.AddText("Pause")
+    Shapes.Move(pauseText, 10, 0)
+    GraphicsWindow.FontSize = 20
+    'GraphicsWindow.BrushColor = "Black"
+    pokracuj = Shapes.AddText("Pokračovat = Space")
+    Shapes.Move(pokracuj, 10, 50)
+  Else
+    pause = "true"
+    Shapes.Remove(pauseText)
+    Shapes.Remove(pokracuj)
+    Shapes.Remove(wallpaper)
+    GraphicsWindow.BrushColor = brushColor
+    GraphicsWindow.PenColor = penColor
+  EndIf
+EndSub
+
+'================== LoadSettings============================
+Sub loadSettings
+  setFile = File.GetSettingsFilePath()
+  penColor = File.ReadLine(setFile, 2)
+  brushColor = File.ReadLine(setFile, 4)
+  backgroundColor = File.ReadLine(setFile, 6)
+  a = File.ReadLine(setFile, 14)
+  key = "Right"
+  strana = File.ReadLine(setFile, 18)
+  gameOverColor = File.ReadLine(setFile, 8)
+  pauseColor = File.ReadLine(setFile, 10)
+  scoreColor = File.ReadLine(setFile, 12)
+  foodSize = File.ReadLine(setFile, 20)
+  aKrok = File.ReadLine(setFile, 16)
+  If File.LastError <> "" Then
+    GraphicsWindow.ShowMessage("Setup file error: "+File.LastError, "")
+  EndIf
+  
+EndSub

@@ -1,0 +1,193 @@
+Okraje dílků těla:
+    Yellow
+Výplň dílků těla:
+    Orange
+Pozadí
+    ForestGreen
+Game over color:
+     #e61919
+Pause color:
+    Aqua
+Score color:
+    Yellow
+Výchozí rychlost (ms/krok):
+    250
+Zrychlení po sežrání (ms/krok):
+    9
+Velikost dílku těla:
+    30
+foodSize:
+    15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
